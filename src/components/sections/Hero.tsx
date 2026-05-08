@@ -81,14 +81,14 @@ export default function Hero() {
           className="mt-10 flex flex-col items-center gap-3 sm:flex-row"
         >
           <Link
-            href="#"
+            href="/games"
             className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-base font-medium text-zinc-900 shadow-2xl shadow-violet-500/20 transition-all hover:-translate-y-0.5 hover:shadow-violet-500/40"
           >
             Start playing
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
           <Link
-            href="#games"
+            href="/games"
             className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-7 py-3.5 text-base text-white backdrop-blur-md transition-colors hover:bg-white/10"
           >
             Browse games

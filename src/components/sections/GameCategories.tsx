@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import CategoryShape from "@/components/three/CategoryShape";
 
 const CATEGORIES = [
@@ -62,8 +63,8 @@ export default function GameCategories() {
 
         <div className="grid gap-6 lg:grid-cols-3">
           {CATEGORIES.map((cat, i) => (
+            <Link key={cat.label} href="/games">
             <motion.div
-              key={cat.label}
               initial={{ opacity: 0, y: 32 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
@@ -105,6 +106,7 @@ export default function GameCategories() {
                 </div>
               </div>
             </motion.div>
+            </Link>
           ))}
         </div>
       </div>

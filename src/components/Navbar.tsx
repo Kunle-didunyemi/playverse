@@ -3,15 +3,18 @@
 import { motion } from "framer-motion";
 import { Gamepad2 } from "lucide-react";
 import Link from "next/link";
+import { useAuth, SignInButton, UserButton } from "@clerk/nextjs";
 
 const NAV_ITEMS = [
-  { label: "Games", href: "#games" },
+  { label: "Games", href: "/games" },
   { label: "Features", href: "#features" },
   { label: "Leaderboards", href: "#" },
   { label: "About", href: "#" },
 ];
 
 export default function Navbar() {
+  const { isSignedIn, isLoaded } = useAuth();
+
   return (
     <motion.header
       initial={{ y: -24, opacity: 0 }}
@@ -41,15 +44,27 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {isLoaded && !isSignedIn && (
+            <SignInButton mode="modal">
+              <button className="hidden rounded-full px-4 py-2 text-sm text-zinc-200 transition-colors hover:text-white sm:inline-flex cursor-pointer">
+                Sign in
+              </button>
+            </SignInButton>
+          )}
+
+          {isLoaded && isSignedIn && (
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "h-8 w-8",
+                },
+              }}
+            />
+          )}
+
           <Link
-            href="#"
-            className="hidden rounded-full px-4 py-2 text-sm text-zinc-200 transition-colors hover:text-white sm:inline-flex"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="#"
+            href="/games"
             className="rounded-full bg-white px-4 py-2 text-sm font-medium text-zinc-900 shadow-md transition-transform hover:-translate-y-0.5"
           >
             Play now
