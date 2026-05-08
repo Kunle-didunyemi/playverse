@@ -8,7 +8,7 @@ import { useAuth, SignInButton, UserButton } from "@clerk/nextjs";
 const NAV_ITEMS = [
   { label: "Games", href: "/games" },
   { label: "Features", href: "#features" },
-  { label: "Leaderboards", href: "#" },
+  { label: "Leaderboards", href: "/leaderboards" },
   { label: "About", href: "#" },
 ];
 
