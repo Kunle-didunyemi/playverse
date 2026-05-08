@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 160" fill="none">
+  <defs>
+    <linearGradient id="gsnake" x1="40" y1="0" x2="440" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#065f46"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="160" rx="18" fill="url(#gsnake)"/>
+  <g opacity="0.25">
+    <path stroke="#ecfdf5" stroke-width="1" d="M32 40h416M32 72h416M32 104h416M32 136h416M48 32v112M112 32v112M176 32v112M240 32v112M304 32v112M368 32v112M432 32v112"/>
+  </g>
+  <rect x="104" y="104" width="32" height="32" rx="6" fill="#34d399"/>
+  <rect x="136" y="104" width="32" height="32" rx="6" fill="#34d399"/>
+  <rect x="168" y="104" width="32" height="32" rx="6" fill="#34d399"/>
+  <rect x="200" y="72" width="32" height="32" rx="6" fill="#34d399"/>
+  <rect x="232" y="40" width="32" height="32" rx="6" fill="#34d399"/>
+  <circle cx="360" cy="88" r="14" fill="#fb7185"/>
+  <circle cx="360" cy="88" r="6" fill="#fecdd3"/>
+</svg>

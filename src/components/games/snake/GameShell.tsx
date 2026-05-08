@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, RotateCcw, Play } from "lucide-react";
+import { ArrowLeft, BookOpen, Play, RotateCcw } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useSnake } from "@/lib/games/snake/useSnake";
 import { useSwipe } from "@/lib/hooks/useSwipe";
 import { submitScore } from "@/lib/api";
 import Leaderboard from "@/components/games/Leaderboard";
+import GameRulesModal from "@/components/games/GameRulesModal";
 
 const CANVAS_PX = 400;
 
@@ -37,6 +38,7 @@ export default function SnakeGameShell() {
   const { isSignedIn } = useUser();
   const submittedRef = useRef(false);
   const refreshKeyRef = useRef(0);
+  const [rulesOpen, setRulesOpen] = useState(false);
 
   useEffect(() => {
     if (state.gameOver && state.score > 0 && isSignedIn && !submittedRef.current) {
@@ -54,24 +56,35 @@ export default function SnakeGameShell() {
     <div className="flex min-h-screen flex-col items-center bg-[#08020f] px-4 py-6">
       {/* Header */}
       <div className="w-full max-w-[400px]">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
           <Link
             href="/games"
-            className="flex items-center gap-1.5 text-sm text-zinc-400 transition-colors hover:text-white"
+            className="flex w-fit items-center gap-1.5 justify-self-start text-sm text-zinc-400 transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
             Games
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+          <h1 className="justify-self-center text-3xl font-bold tracking-tight text-white">
             Snake
           </h1>
-          <button
-            onClick={reset}
-            className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            New
-          </button>
+          <div className="flex items-center justify-end gap-2 justify-self-end">
+            <button
+              type="button"
+              onClick={() => setRulesOpen(true)}
+              className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <BookOpen className="h-3.5 w-3.5 shrink-0" />
+              Rules
+            </button>
+            <button
+              type="button"
+              onClick={reset}
+              className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <RotateCcw className="h-3.5 w-3.5 shrink-0" />
+              New
+            </button>
+          </div>
         </div>
 
         <div className="mb-6 flex items-center justify-center gap-3">
@@ -159,6 +172,40 @@ export default function SnakeGameShell() {
         Use arrow keys or swipe to steer the snake. Eat the pink food to grow.
         Don&apos;t hit the walls or yourself.
       </p>
+
+      <GameRulesModal
+        open={rulesOpen}
+        onClose={() => setRulesOpen(false)}
+        title="How to play · Snake"
+      >
+        <ul className="list-disc space-y-2 pl-4 marker:text-emerald-400">
+          <li>
+            Control the snake with{" "}
+            <strong className="text-zinc-200">arrow keys</strong>,{" "}
+            <strong className="text-zinc-200">swipes</strong> on the board, or
+            the on-screen <strong className="text-zinc-200">D-pad</strong> on
+            small screens.
+          </li>
+          <li>
+            Press <strong className="text-zinc-200">Start game</strong> (or any
+            arrow) to begin a run.
+          </li>
+          <li>
+            Move onto the <strong className="text-zinc-200">food</strong> to
+            eat it: you grow longer and your{" "}
+            <strong className="text-zinc-200">score</strong> increases.
+          </li>
+          <li>
+            If your head hits a{" "}
+            <strong className="text-zinc-200">wall</strong> or your own{" "}
+            <strong className="text-zinc-200">body</strong>, the game ends.
+          </li>
+          <li>
+            <strong className="text-zinc-200">New</strong> restarts from a
+            fresh snake and score (your session best is tracked separately).
+          </li>
+        </ul>
+      </GameRulesModal>
 
       {/* Leaderboard */}
       <div className="mt-8">

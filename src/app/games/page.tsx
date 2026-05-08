@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,7 +15,8 @@ interface GameCard {
   description: string;
   href: string;
   category: "2D" | "3D" | "Multiplayer";
-  accent: string;
+  imageSrc: string;
+  imageAlt: string;
   available: boolean;
 }
 
@@ -24,7 +26,8 @@ const GAMES: GameCard[] = [
     description: "Slide tiles and merge matching numbers. How high can you go?",
     href: "/games/2048",
     category: "2D",
-    accent: "from-violet-500 to-fuchsia-500",
+    imageSrc: "/games/2048.svg",
+    imageAlt: "Stylized 2048 tiles showing numbered squares",
     available: true,
   },
   {
@@ -32,31 +35,36 @@ const GAMES: GameCard[] = [
     description: "Guide the snake, eat the food, grow longer. Don't hit the walls.",
     href: "/games/snake",
     category: "2D",
-    accent: "from-emerald-500 to-teal-500",
+    imageSrc: "/games/snake.svg",
+    imageAlt: "Snake game illustration with grid, snake, and food",
     available: true,
   },
   {
     title: "Wordle",
     description: "Guess the five-letter word in six tries. Daily challenge mode.",
-    href: "#",
+    href: "/games/wordle",
     category: "2D",
-    accent: "from-amber-500 to-orange-500",
-    available: false,
+    imageSrc: "/games/wordle.svg",
+    imageAlt: "Wordle-style letter tiles in green and yellow",
+    available: true,
   },
   {
     title: "Tic-Tac-Toe",
-    description: "Classic X and O. Play against AI or challenge a friend.",
-    href: "#",
+    description:
+      "You are X vs a minimax AI (optimal O). Force the draw or climb the board when the stars align.",
+    href: "/games/tic-tac-toe",
     category: "2D",
-    accent: "from-cyan-500 to-blue-500",
-    available: false,
+    imageSrc: "/games/tic-tac-toe.svg",
+    imageAlt: "Tic-tac-toe grid with X and O marks",
+    available: true,
   },
   {
     title: "Ball Roller",
     description: "Tilt the maze and guide the ball to the goal. 3D physics puzzle.",
     href: "#",
     category: "3D",
-    accent: "from-pink-500 to-rose-500",
+    imageSrc: "/games/ball-roller.svg",
+    imageAlt: "Ball rolling along abstract curved paths",
     available: false,
   },
   {
@@ -64,7 +72,8 @@ const GAMES: GameCard[] = [
     description: "Putt your way through creative holes. Aim for a hole-in-one.",
     href: "#",
     category: "3D",
-    accent: "from-indigo-500 to-purple-500",
+    imageSrc: "/games/mini-golf.svg",
+    imageAlt: "Mini golf green with hole, flag, and ball",
     available: false,
   },
 ];
@@ -97,16 +106,23 @@ export default function GamesPage() {
               <Link
                 key={game.title}
                 href={game.available ? game.href : "#"}
-                className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-all ${
+                className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/2 p-6 transition-all ${
                   game.available
                     ? "hover:-translate-y-1 hover:border-white/25 cursor-pointer"
                     : "opacity-50 cursor-not-allowed"
                 }`}
               >
-                {/* Gradient accent bar */}
-                <div
-                  className={`mb-5 h-24 w-full rounded-xl bg-gradient-to-br ${game.accent} opacity-30`}
-                />
+                <div className="relative mb-5 h-28 w-full overflow-hidden rounded-xl bg-black/50 ring-1 ring-white/10">
+                  <Image
+                    src={game.imageSrc}
+                    alt={game.imageAlt}
+                    fill
+                    className={`object-cover object-center transition-transform duration-300 ease-out ${
+                      game.available ? "group-hover:scale-[1.04]" : ""
+                    }`}
+                    sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 320px"
+                  />
+                </div>
 
                 <div className="flex items-center gap-2 mb-2">
                   <h3 className="text-lg font-semibold text-white">

@@ -1,9 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Gamepad2 } from "lucide-react";
+import { Gamepad2, LogOut } from "lucide-react";
 import Link from "next/link";
-import { useAuth, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignInButton,
+  SignOutButton,
+  useAuth,
+  UserButton,
+} from "@clerk/nextjs";
 
 const NAV_ITEMS = [
   { label: "Games", href: "/games" },
@@ -54,13 +59,25 @@ export default function Navbar() {
           )}
 
           {isLoaded && isSignedIn && (
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "h-8 w-8",
-                },
-              }}
-            />
+            <>
+              <SignOutButton redirectUrl="/">
+                <button
+                  type="button"
+                  aria-label="Log out"
+                  title="Log out"
+                  className="rounded-full p-2 text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </SignOutButton>
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "h-8 w-8",
+                  },
+                }}
+              />
+            </>
           )}
 
           <Link

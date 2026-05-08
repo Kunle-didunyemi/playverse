@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 160" fill="none">
+  <defs>
+    <linearGradient id="gball" x1="0" y1="160" x2="480" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#be185d"/>
+      <stop offset="1" stop-color="#fb7185"/>
+    </linearGradient>
+    <radialGradient id="sphere" cx="0.35" cy="0.35" r="0.65">
+      <stop stop-color="#ffe4e6"/>
+      <stop offset="1" stop-color="#ec4899"/>
+    </radialGradient>
+  </defs>
+  <rect width="480" height="160" rx="18" fill="url(#gball)"/>
+  <path d="M40 120 Q160 40 280 90 T440 70" stroke="#fdf2f8" stroke-width="6" stroke-linecap="round" opacity="0.35" fill="none"/>
+  <path d="M56 132 L420 48" stroke="#fdf2f8" stroke-width="4" stroke-linecap="round" opacity="0.22"/>
+  <circle cx="300" cy="78" r="36" fill="url(#sphere)"/>
+  <ellipse cx="284" cy="64" rx="12" ry="8" fill="#fff5f7" opacity="0.55"/>
+</svg>

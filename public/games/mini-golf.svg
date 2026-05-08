@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 160" fill="none">
+  <defs>
+    <linearGradient id="ggolf" x1="80" y1="160" x2="420" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#312e81"/>
+      <stop offset="0.5" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="160" rx="18" fill="url(#ggolf)"/>
+  <ellipse cx="260" cy="102" rx="190" ry="56" fill="#14532d" opacity="0.9"/>
+  <ellipse cx="260" cy="108" rx="190" ry="56" fill="#166534" opacity="0.45"/>
+  <circle cx="268" cy="108" r="10" fill="#0f172a"/>
+  <circle cx="268" cy="108" r="6" fill="#1e293b"/>
+  <path d="M352 38 L352 92" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+  <path d="M336 38 H368 L352 22 Z" fill="#f43f5e"/>
+  <circle cx="130" cy="118" r="8" fill="#f8fafc"/>
+</svg>

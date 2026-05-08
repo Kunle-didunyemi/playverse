@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft, BookOpen, RotateCcw } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import Board from "./Board";
+import GameRulesModal from "@/components/games/GameRulesModal";
 import Leaderboard from "@/components/games/Leaderboard";
 import { use2048 } from "@/lib/games/2048/use2048";
 import { useSwipe } from "@/lib/hooks/useSwipe";
@@ -36,6 +37,7 @@ export default function GameShell() {
   const { isSignedIn } = useUser();
   const submittedRef = useRef(false);
   const refreshKeyRef = useRef(0);
+  const [rulesOpen, setRulesOpen] = useState(false);
 
   useEffect(() => {
     if (gameOver && score > 0 && isSignedIn && !submittedRef.current) {
@@ -53,24 +55,35 @@ export default function GameShell() {
     <div className="flex min-h-screen flex-col items-center bg-[#08020f] px-4 py-6">
       {/* Header */}
       <div className="w-full max-w-[400px]">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
           <Link
             href="/games"
-            className="flex items-center gap-1.5 text-sm text-zinc-400 transition-colors hover:text-white"
+            className="flex w-fit items-center gap-1.5 justify-self-start text-sm text-zinc-400 transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
             Games
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+          <h1 className="justify-self-center text-3xl font-bold tracking-tight text-white">
             2048
           </h1>
-          <button
-            onClick={reset}
-            className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            New
-          </button>
+          <div className="flex items-center justify-end gap-2 justify-self-end">
+            <button
+              type="button"
+              onClick={() => setRulesOpen(true)}
+              className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <BookOpen className="h-3.5 w-3.5 shrink-0" />
+              Rules
+            </button>
+            <button
+              type="button"
+              onClick={reset}
+              className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <RotateCcw className="h-3.5 w-3.5 shrink-0" />
+              New
+            </button>
+          </div>
         </div>
 
         <div className="mb-6 flex items-center justify-center gap-3">
@@ -161,6 +174,43 @@ export default function GameShell() {
         Use arrow keys or swipe to slide tiles. Merge matching numbers to
         reach 2048.
       </p>
+
+      <GameRulesModal
+        open={rulesOpen}
+        onClose={() => setRulesOpen(false)}
+        title="How to play · 2048"
+      >
+        <ul className="list-disc space-y-2 pl-4 marker:text-violet-400">
+          <li>
+            You start on a 4×4 grid with numbered tiles. Use{" "}
+            <strong className="text-zinc-200">arrow keys</strong> or{" "}
+            <strong className="text-zinc-200">swipe</strong> to slide every
+            tile in that direction at once.
+          </li>
+          <li>
+            When two tiles with the{" "}
+            <strong className="text-zinc-200">same number</strong> collide,
+            they merge into one tile showing their sum (e.g. 2+2 → 4).
+          </li>
+          <li>
+            After each successful move, a new{" "}
+            <strong className="text-zinc-200">2</strong> or{" "}
+            <strong className="text-zinc-200">4</strong> appears on an empty
+            cell.
+          </li>
+          <li>
+            The usual goal is to create a tile worth{" "}
+            <strong className="text-zinc-200">2048</strong>. You can keep going
+            afterward for a higher score.
+          </li>
+          <li>
+            The game ends when the board has{" "}
+            <strong className="text-zinc-200">no empty cells</strong> and no
+            move would merge any neighbors — plan ahead so you do not get
+            stuck.
+          </li>
+        </ul>
+      </GameRulesModal>
 
       {/* Leaderboard */}
       <div className="mt-8">
