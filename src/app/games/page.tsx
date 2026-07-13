@@ -76,6 +76,33 @@ const GAMES: GameCard[] = [
     imageAlt: "Mini golf green with hole, flag, and ball",
     available: true,
   },
+  {
+    title: "Memory",
+    description: "Flip the cards and match every pair. Fewer moves, higher score.",
+    href: "/games/memory",
+    category: "2D",
+    imageSrc: "/games/memory.svg",
+    imageAlt: "Memory match cards with symbols",
+    available: true,
+  },
+  {
+    title: "Breakout",
+    description: "Bounce the ball and smash every brick before you run out of lives.",
+    href: "/games/breakout",
+    category: "2D",
+    imageSrc: "/games/breakout.svg",
+    imageAlt: "Breakout bricks, ball, and paddle",
+    available: true,
+  },
+  {
+    title: "Sky Dash",
+    description: "Flap through endless gates. One hit ends the run — how far can you go?",
+    href: "/games/sky-dash",
+    category: "2D",
+    imageSrc: "/games/sky-dash.svg",
+    imageAlt: "Bird flying between sky gates",
+    available: true,
+  },
 ];
 
 function CategoryBadge({ category }: { category: string }) {
