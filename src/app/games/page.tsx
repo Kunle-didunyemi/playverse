@@ -61,20 +61,20 @@ const GAMES: GameCard[] = [
   {
     title: "Ball Roller",
     description: "Tilt the maze and guide the ball to the goal. 3D physics puzzle.",
-    href: "#",
+    href: "/games/ball-roller",
     category: "3D",
     imageSrc: "/games/ball-roller.svg",
     imageAlt: "Ball rolling along abstract curved paths",
-    available: false,
+    available: true,
   },
   {
     title: "Mini Golf",
     description: "Putt your way through creative holes. Aim for a hole-in-one.",
-    href: "#",
+    href: "/games/mini-golf",
     category: "3D",
     imageSrc: "/games/mini-golf.svg",
     imageAlt: "Mini golf green with hole, flag, and ball",
-    available: false,
+    available: true,
   },
 ];
 
