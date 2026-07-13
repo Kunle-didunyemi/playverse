@@ -1,5 +1,31 @@
 export type Cell = "X" | "O" | null;
 export type Outcome = "X" | "O" | "draw";
+export type Difficulty = "easy" | "medium" | "hard";
+
+export const DIFFICULTIES: readonly Difficulty[] = [
+  "easy",
+  "medium",
+  "hard",
+] as const;
+
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+};
+
+export const DIFFICULTY_BLURBS: Record<Difficulty, string> = {
+  easy: "Mostly casual moves — great for warming up.",
+  medium: "Solid play with occasional mistakes.",
+  hard: "Full minimax — optimal defense.",
+};
+
+/** Chance the AI ignores the optimal move and plays randomly instead. */
+const RANDOM_MOVE_CHANCE: Record<Difficulty, number> = {
+  easy: 0.72,
+  medium: 0.32,
+  hard: 0,
+};
 
 export const WIN_LINES: readonly number[][] = [
   [0, 1, 2],
@@ -59,16 +85,32 @@ function minimax(board: Cell[], depth: number, aiTurn: boolean): number {
   return best;
 }
 
-/**
- * Optimal AI move for player O vs human X.
- * Among ties at best minimax value, picks uniformly — variation without weakening play.
- */
-export function pickAiMove(board: readonly Cell[]): number | null {
+function emptyIndices(board: readonly Cell[]): number[] {
   const empties: number[] = [];
   for (let i = 0; i < 9; i++) {
     if (board[i] === null) empties.push(i);
   }
+  return empties;
+}
+
+function pickRandom(indices: number[]): number {
+  return indices[Math.floor(Math.random() * indices.length)]!;
+}
+
+/**
+ * AI move for player O vs human X.
+ * Hard = optimal minimax. Medium/Easy sometimes pick a random legal move.
+ */
+export function pickAiMove(
+  board: readonly Cell[],
+  difficulty: Difficulty = "hard",
+): number | null {
+  const empties = emptyIndices(board);
   if (empties.length === 0) return null;
+
+  if (Math.random() < RANDOM_MOVE_CHANCE[difficulty]) {
+    return pickRandom(empties);
+  }
 
   let bestScore = -Infinity;
   const candidates: number[] = [];
@@ -87,13 +129,17 @@ export function pickAiMove(board: readonly Cell[]): number | null {
     }
   }
 
-  return candidates[Math.floor(Math.random() * candidates.length)]!;
+  return pickRandom(candidates);
 }
 
-export function leaderboardPoints(outcome: Outcome): number {
-  if (outcome === "X") return 320;
-  if (outcome === "draw") return 140;
-  return 60;
+export function leaderboardPoints(
+  outcome: Outcome,
+  difficulty: Difficulty = "hard",
+): number {
+  const scale =
+    difficulty === "easy" ? 0.45 : difficulty === "medium" ? 0.7 : 1;
+  const base = outcome === "X" ? 320 : outcome === "draw" ? 140 : 60;
+  return Math.max(10, Math.round(base * scale));
 }
 
 export function winningLineIndices(

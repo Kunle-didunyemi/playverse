@@ -12,6 +12,12 @@ const GAMES = [
   { id: "tic-tac-toe", title: "Tic-Tac-Toe", category: "2d", multiplayer: false },
   { id: "ball-roller", title: "Ball Roller", category: "3d", multiplayer: false },
   { id: "minigolf", title: "Mini Golf", category: "3d", multiplayer: false },
+  { id: "memory", title: "Memory", category: "2d", multiplayer: false },
+  { id: "breakout", title: "Breakout", category: "2d", multiplayer: false },
+  { id: "sky-dash", title: "Sky Dash", category: "2d", multiplayer: false },
+  { id: "cube-stack", title: "Cube Stack", category: "3d", multiplayer: false },
+  { id: "tunnel-rush", title: "Tunnel Rush", category: "3d", multiplayer: false },
+  { id: "target-gallery", title: "Target Gallery", category: "3d", multiplayer: false },
 ];
 
 async function main() {

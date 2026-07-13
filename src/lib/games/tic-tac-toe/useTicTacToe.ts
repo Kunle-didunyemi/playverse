@@ -6,17 +6,22 @@ import {
   getOutcome,
   pickAiMove,
   type Cell,
+  type Difficulty,
   type Outcome,
 } from "./engine";
 
 const AI_DELAY_MS = 380;
 
 export function useTicTacToe() {
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [board, setBoard] = useState<Cell[]>(() => emptyBoard());
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [aiThinking, setAiThinking] = useState(false);
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const roundRef = useRef(0);
+  const difficultyRef = useRef<Difficulty | null>(null);
+
+  difficultyRef.current = difficulty;
 
   const clearTimer = useCallback(() => {
     if (aiTimerRef.current !== null) {
@@ -31,13 +36,34 @@ export function useTicTacToe() {
     setBoard(emptyBoard());
     setOutcome(null);
     setAiThinking(false);
+    setDifficulty(null);
   }, [clearTimer]);
+
+  const start = useCallback(
+    (next: Difficulty) => {
+      roundRef.current += 1;
+      clearTimer();
+      setDifficulty(next);
+      setBoard(emptyBoard());
+      setOutcome(null);
+      setAiThinking(false);
+    },
+    [clearTimer],
+  );
 
   useEffect(() => () => clearTimer(), [clearTimer]);
 
   const playHumanCell = useCallback(
     (index: number) => {
-      if (outcome !== null || aiThinking || board[index] !== null) return;
+      const level = difficultyRef.current;
+      if (
+        level === null ||
+        outcome !== null ||
+        aiThinking ||
+        board[index] !== null
+      ) {
+        return;
+      }
 
       const roundAtMove = roundRef.current;
 
@@ -57,7 +83,7 @@ export function useTicTacToe() {
         aiTimerRef.current = null;
         if (roundRef.current !== roundAtMove) return;
 
-        const chosen = pickAiMove(afterHuman);
+        const chosen = pickAiMove(afterHuman, level);
         if (chosen === null) {
           setAiThinking(false);
           return;
@@ -76,10 +102,12 @@ export function useTicTacToe() {
   );
 
   return {
+    difficulty,
     board,
     outcome,
     aiThinking,
     playHumanCell,
+    start,
     reset,
   };
 }

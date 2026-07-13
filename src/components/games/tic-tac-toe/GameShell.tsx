@@ -9,9 +9,13 @@ import Leaderboard from "@/components/games/Leaderboard";
 import GameRulesModal from "@/components/games/GameRulesModal";
 import { submitScore } from "@/lib/api";
 import {
+  DIFFICULTIES,
+  DIFFICULTY_BLURBS,
+  DIFFICULTY_LABELS,
   leaderboardPoints,
   winningLineIndices,
   TIC_TAC_TOE_GAME_ID,
+  type Difficulty,
 } from "@/lib/games/tic-tac-toe/engine";
 import { useTicTacToe } from "@/lib/games/tic-tac-toe/useTicTacToe";
 
@@ -21,8 +25,14 @@ function pillClass(active: boolean) {
     : "bg-white/5 text-zinc-500";
 }
 
+function difficultyAccent(d: Difficulty): string {
+  if (d === "easy") return "hover:border-emerald-400/50 hover:bg-emerald-500/10";
+  if (d === "medium") return "hover:border-amber-400/50 hover:bg-amber-500/10";
+  return "hover:border-rose-400/50 hover:bg-rose-500/10";
+}
+
 export default function TicTacToeGameShell() {
-  const { board, outcome, aiThinking, playHumanCell, reset } =
+  const { difficulty, board, outcome, aiThinking, playHumanCell, start, reset } =
     useTicTacToe();
   const { isSignedIn } = useUser();
   const submittedRef = useRef(false);
@@ -41,38 +51,43 @@ export default function TicTacToeGameShell() {
       submittedRef.current = false;
       return;
     }
-    if (!isSignedIn || submittedRef.current) return;
+    if (!isSignedIn || submittedRef.current || !difficulty) return;
     submittedRef.current = true;
-    submitScore(TIC_TAC_TOE_GAME_ID, leaderboardPoints(outcome)).then(() => {
+    submitScore(
+      TIC_TAC_TOE_GAME_ID,
+      leaderboardPoints(outcome, difficulty),
+    ).then(() => {
       setRefreshKey((k) => k + 1);
     });
-  }, [outcome, isSignedIn]);
+  }, [outcome, isSignedIn, difficulty]);
 
   const headline =
-    outcome === null
-      ? aiThinking
-        ? "AI is thinking…"
-        : "Your move — you are X"
-      : outcome === "X"
-        ? "You win!"
-        : outcome === "O"
-          ? "AI wins"
-          : "Draw";
+    difficulty === null
+      ? "Pick a difficulty to start"
+      : outcome === null
+        ? aiThinking
+          ? "AI is thinking…"
+          : "Your move — you are X"
+        : outcome === "X"
+          ? "You win!"
+          : outcome === "O"
+            ? "AI wins"
+            : "Draw";
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-[#08020f] px-4 py-6 pb-16">
       <div className="w-full max-w-[400px]">
-      <Link
-            href="/games"
-            className="sm:hidden flex w-fit items-center gap-1.5 justify-self-start text-sm text-zinc-400 transition-colors hover:text-white mb-4"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Games
-          </Link>
+        <Link
+          href="/games"
+          className="mb-4 flex w-fit items-center gap-1.5 text-sm text-zinc-400 transition-colors hover:text-white sm:hidden"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Games
+        </Link>
         <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
           <Link
             href="/games"
-            className="sm:flex hidden w-fit items-center gap-1.5 justify-self-start text-sm text-zinc-400 transition-colors hover:text-white"
+            className="hidden w-fit items-center gap-1.5 justify-self-start text-sm text-zinc-400 transition-colors hover:text-white sm:flex"
           >
             <ArrowLeft className="h-4 w-4" />
             Games
@@ -109,7 +124,8 @@ export default function TicTacToeGameShell() {
           <span
             className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${pillClass(outcome === "O")}`}
           >
-            O — AI (minimax)
+            O — AI
+            {difficulty ? ` · ${DIFFICULTY_LABELS[difficulty]}` : ""}
           </span>
         </div>
 
@@ -118,24 +134,27 @@ export default function TicTacToeGameShell() {
 
       <div className="relative w-full max-w-[340px] select-none">
         <div
-          className={`grid grid-cols-3 gap-2 rounded-2xl bg-[#12081f] p-3 ring-1 ring-white/10 ${aiThinking || outcome !== null ? "opacity-90" : ""}`}
+          className={`grid grid-cols-3 gap-2 rounded-2xl bg-[#12081f] p-3 ring-1 ring-white/10 ${aiThinking || outcome !== null || difficulty === null ? "opacity-90" : ""}`}
           aria-busy={aiThinking}
         >
           {board.map((cell, i) => {
             const winCell = highlight?.has(i) ?? false;
+            const canPlay =
+              difficulty !== null &&
+              cell === null &&
+              outcome === null &&
+              !aiThinking;
             return (
               <button
                 key={i}
                 type="button"
-                disabled={
-                  cell !== null || aiThinking || outcome !== null
-                }
+                disabled={!canPlay}
                 onClick={() => playHumanCell(i)}
                 className={`flex aspect-square items-center justify-center rounded-xl text-4xl font-black transition-colors sm:text-5xl ${
                   winCell
                     ? "bg-emerald-500/25 ring-2 ring-emerald-400/60 text-white"
                     : "bg-[#1a1128] text-white hover:bg-[#231733]"
-                } ${cell === null && outcome === null && !aiThinking ? "cursor-pointer active:scale-[0.97]" : "cursor-default"}`}
+                } ${canPlay ? "cursor-pointer active:scale-[0.97]" : "cursor-default"}`}
               >
                 <AnimatePresence mode="wait" initial={false}>
                   {cell !== null && (
@@ -144,7 +163,11 @@ export default function TicTacToeGameShell() {
                       initial={{ scale: 0.35, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0.35, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 380, damping: 22 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 22,
+                      }}
                       className={
                         cell === "X"
                           ? "text-cyan-300 drop-shadow-[0_0_12px_rgba(103,232,249,0.35)]"
@@ -161,12 +184,38 @@ export default function TicTacToeGameShell() {
         </div>
 
         <AnimatePresence>
-          {outcome !== null && (
+          {difficulty === null && (
+            <div className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-2xl bg-black/78 px-5 backdrop-blur-sm">
+              <h2 className="mb-1 text-2xl font-bold text-white">Difficulty</h2>
+              <p className="mb-5 text-center text-xs text-zinc-400">
+                Choose how strong the AI should play
+              </p>
+              <div className="flex w-full flex-col gap-2">
+                {DIFFICULTIES.map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => start(d)}
+                    className={`rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left transition-colors ${difficultyAccent(d)}`}
+                  >
+                    <span className="block text-sm font-semibold text-white">
+                      {DIFFICULTY_LABELS[d]}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-zinc-400">
+                      {DIFFICULTY_BLURBS[d]}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {outcome !== null && difficulty !== null && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-2xl bg-black/72 backdrop-blur-sm"
+              className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-2xl bg-black/72 px-5 backdrop-blur-sm"
             >
               <h2 className="mb-2 text-3xl font-bold text-white">
                 {outcome === "X"
@@ -177,15 +226,15 @@ export default function TicTacToeGameShell() {
               </h2>
               <p className="mb-1 text-center text-sm text-zinc-300">
                 {outcome === "draw"
-                  ? "Perfect play from both sides ends in a tie."
+                  ? `Draw on ${DIFFICULTY_LABELS[difficulty]}.`
                   : outcome === "X"
-                    ? "That should not happen against optimal AI — enjoy the bragging rights."
-                    : "Unbeatable line — try forcing the draw next time."}
+                    ? `You beat ${DIFFICULTY_LABELS[difficulty]} AI.`
+                    : `${DIFFICULTY_LABELS[difficulty]} AI wins this round.`}
               </p>
               <p className="mb-5 text-xs text-zinc-500">
-                Leaderboard points for this round:{" "}
+                Leaderboard points:{" "}
                 <span className="font-semibold tabular-nums text-zinc-300">
-                  {leaderboardPoints(outcome)}
+                  {leaderboardPoints(outcome, difficulty)}
                 </span>
               </p>
               {isSignedIn && (
@@ -198,13 +247,22 @@ export default function TicTacToeGameShell() {
                   Sign in to save your score
                 </p>
               )}
-              <button
-                type="button"
-                onClick={reset}
-                className="rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-zinc-900 shadow-lg transition-transform hover:-translate-y-0.5"
-              >
-                Play again
-              </button>
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => start(difficulty)}
+                  className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 shadow-lg transition-transform hover:-translate-y-0.5"
+                >
+                  Play again
+                </button>
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="rounded-full bg-white/10 px-5 py-2.5 text-sm font-semibold text-white ring-1 ring-white/20 transition-colors hover:bg-white/15"
+                >
+                  Change difficulty
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -212,11 +270,11 @@ export default function TicTacToeGameShell() {
 
       <p className="mt-8 max-w-[400px] text-center text-xs leading-relaxed text-zinc-500">
         You play <strong className="text-zinc-400">X</strong> and move first.
-        The AI uses{" "}
-        <strong className="text-zinc-400">minimax</strong> (optimal play,
-        random tie-break among equally strong moves). With best play on both
-        sides, a <strong className="text-zinc-400">draw</strong> is the
-        typical outcome.
+        Pick <strong className="text-zinc-400">Easy</strong>,{" "}
+        <strong className="text-zinc-400">Medium</strong>, or{" "}
+        <strong className="text-zinc-400">Hard</strong> before each match. Hard
+        uses full minimax; easier modes make more random mistakes. Harder wins
+        score more on the leaderboard.
       </p>
 
       <GameRulesModal
@@ -225,6 +283,10 @@ export default function TicTacToeGameShell() {
         title="How to play · Tic-Tac-Toe"
       >
         <ul className="list-disc space-y-2 pl-4 marker:text-cyan-400">
+          <li>
+            Choose a <strong className="text-zinc-200">difficulty</strong>{" "}
+            before the round starts: Easy, Medium, or Hard.
+          </li>
           <li>
             The board is <strong className="text-zinc-200">3×3</strong>. You
             are <strong className="text-zinc-200">X</strong> and always{" "}
@@ -241,18 +303,14 @@ export default function TicTacToeGameShell() {
             horizontally, vertically, or diagonally to win.
           </li>
           <li>
-            If the grid fills with no winner, the game is a{" "}
-            <strong className="text-zinc-200">draw</strong>.
+            <strong className="text-zinc-200">Hard</strong> uses optimal
+            minimax. <strong className="text-zinc-200">Medium</strong> and{" "}
+            <strong className="text-zinc-200">Easy</strong> sometimes play
+            random moves so you can win more often.
           </li>
           <li>
-            The AI chooses moves with{" "}
-            <strong className="text-zinc-200">minimax</strong> (perfect defense).
-            When several moves are equally strong, it picks one at random so lines
-            feel less repetitive.
-          </li>
-          <li>
-            Use <strong className="text-zinc-200">New</strong> to restart the
-            same matchup anytime.
+            <strong className="text-zinc-200">New</strong> returns to the
+            difficulty picker. Points scale with difficulty.
           </li>
         </ul>
       </GameRulesModal>
