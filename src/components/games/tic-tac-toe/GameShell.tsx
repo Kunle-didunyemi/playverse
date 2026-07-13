@@ -62,15 +62,22 @@ export default function TicTacToeGameShell() {
   return (
     <div className="flex min-h-screen flex-col items-center bg-[#08020f] px-4 py-6 pb-16">
       <div className="w-full max-w-[400px]">
-        <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-          <Link
+      <Link
             href="/games"
-            className="flex w-fit items-center gap-1.5 justify-self-start text-sm text-zinc-400 transition-colors hover:text-white"
+            className="sm:hidden flex w-fit items-center gap-1.5 justify-self-start text-sm text-zinc-400 transition-colors hover:text-white mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
             Games
           </Link>
-          <h1 className="justify-self-center text-center text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <Link
+            href="/games"
+            className="sm:flex hidden w-fit items-center gap-1.5 justify-self-start text-sm text-zinc-400 transition-colors hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Games
+          </Link>
+          <h1 className="justify-self-center text-center text-2xl font-bold tracking-tight text-white whitespace-nowrap sm:text-3xl">
             Tic-Tac-Toe
           </h1>
           <div className="flex items-center justify-end gap-2 justify-self-end">
