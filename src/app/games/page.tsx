@@ -103,6 +103,33 @@ const GAMES: GameCard[] = [
     imageAlt: "Bird flying between sky gates",
     available: true,
   },
+  {
+    title: "Cube Stack",
+    description: "Drop sliding slabs and build the tallest tower before you miss.",
+    href: "/games/cube-stack",
+    category: "3D",
+    imageSrc: "/games/cube-stack.svg",
+    imageAlt: "Stacked colorful 3D cubes forming a tower",
+    available: true,
+  },
+  {
+    title: "Tunnel Rush",
+    description: "Weave through a neon tunnel and dodge oncoming obstacles.",
+    href: "/games/tunnel-rush",
+    category: "3D",
+    imageSrc: "/games/tunnel-rush.svg",
+    imageAlt: "Ship racing through a neon tunnel",
+    available: true,
+  },
+  {
+    title: "Target Gallery",
+    description: "Click floating orbs against the clock. Smaller targets score more.",
+    href: "/games/target-gallery",
+    category: "3D",
+    imageSrc: "/games/target-gallery.svg",
+    imageAlt: "Colorful 3D target orbs in a gallery",
+    available: true,
+  },
 ];
 
 function CategoryBadge({ category }: { category: string }) {
