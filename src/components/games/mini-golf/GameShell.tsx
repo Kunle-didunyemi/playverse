@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, BookOpen, Play, RotateCcw } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -145,22 +144,17 @@ export default function MiniGolfGameShell() {
       </div>
 
       <div className="relative w-full max-w-[520px] overflow-hidden rounded-2xl ring-1 ring-white/10">
-        <div className="aspect-[4/3] w-full sm:aspect-[5/4]">
+        <div className="relative aspect-[4/3] w-full sm:aspect-[5/4]">
           <MiniGolfScene
             stateRef={stateRef}
             holeIndex={state.holeIndex}
             onAim={aimToward}
+            onChargeStart={chargeStart}
+            onChargeEnd={chargeEnd}
           />
-        </div>
 
-        <AnimatePresence>
           {state.phase === "ready" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/65 backdrop-blur-sm"
-            >
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
               <button
                 type="button"
                 onClick={start}
@@ -170,19 +164,14 @@ export default function MiniGolfGameShell() {
                 Start course
               </button>
               <p className="mt-4 max-w-xs text-center text-xs text-zinc-400">
-                Move the pointer to aim. Hold Space to charge, release to putt.
-                ← → also rotate aim.
+                Move the pointer to aim. Hold Space (or Hold to putt) to charge,
+                release to hit. ← → rotate aim.
               </p>
-            </motion.div>
+            </div>
           )}
 
           {state.phase === "hole_done" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm"
-            >
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/75 backdrop-blur-sm">
               <h2 className="text-3xl font-bold text-white">
                 {state.strokes === 1
                   ? "Hole in one!"
@@ -201,16 +190,11 @@ export default function MiniGolfGameShell() {
               >
                 Next hole
               </button>
-            </motion.div>
+            </div>
           )}
 
           {state.phase === "hole_fail" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm px-6"
-            >
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/75 backdrop-blur-sm px-6">
               <h2 className="text-3xl font-bold text-white">Stroke limit</h2>
               <p className="mt-2 text-center text-sm text-zinc-400">
                 This hole caps at 8 strokes. Retry or skip with a small score.
@@ -231,16 +215,11 @@ export default function MiniGolfGameShell() {
                   Skip
                 </button>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {state.phase === "course_done" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/75 backdrop-blur-sm px-6"
-            >
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm px-6">
               <h2 className="text-3xl font-bold text-white">Course complete!</h2>
               <p className="mt-3 text-sm text-zinc-400">
                 Final score{" "}
@@ -268,26 +247,24 @@ export default function MiniGolfGameShell() {
               >
                 Play again
               </button>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
 
       {state.phase === "aiming" && (
         <button
           type="button"
-          className="mt-5 rounded-full bg-emerald-500/20 px-8 py-3 text-sm font-semibold text-emerald-200 ring-1 ring-emerald-400/40 active:bg-emerald-500/35 sm:hidden"
-          onTouchStart={(e) => {
+          className="mt-5 rounded-full bg-emerald-500/20 px-8 py-3 text-sm font-semibold text-emerald-200 ring-1 ring-emerald-400/40 active:bg-emerald-500/35"
+          onPointerDown={(e) => {
             e.preventDefault();
             chargeStart();
           }}
-          onTouchEnd={(e) => {
+          onPointerUp={(e) => {
             e.preventDefault();
             chargeEnd();
           }}
-          onMouseDown={chargeStart}
-          onMouseUp={chargeEnd}
-          onMouseLeave={chargeEnd}
+          onPointerLeave={chargeEnd}
         >
           Hold to putt
         </button>

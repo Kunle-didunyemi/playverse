@@ -269,7 +269,7 @@ export function updateCharge(state: MiniGolfState, dt: number): MiniGolfState {
 }
 
 export function releasePutt(state: MiniGolfState): MiniGolfState {
-  if (state.phase !== "aiming" || state.power < 0.2) {
+  if (state.phase !== "aiming" || state.power < 0.12) {
     return { ...state, charging: false, power: 0 };
   }
   const speed = state.power;

@@ -1,8 +1,7 @@
 "use client";
 
-import { Canvas, ThreeEvent, useFrame } from "@react-three/fiber";
-import { ContactShadows, Environment } from "@react-three/drei";
-import { type RefObject, useMemo, useRef } from "react";
+import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
+import { type RefObject, Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 import {
   BALL_RADIUS,
@@ -15,7 +14,7 @@ function Green({ halfW, halfD }: { halfW: number; halfD: number }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <planeGeometry args={[halfW * 2, halfD * 2]} />
-      <meshStandardMaterial color="#166534" roughness={0.9} metalness={0.05} />
+      <meshStandardMaterial color="#166534" roughness={0.92} metalness={0.05} />
     </mesh>
   );
 }
@@ -37,7 +36,7 @@ function Border({ halfW, halfD }: { halfW: number; halfD: number }) {
       {parts.map((p, i) => (
         <mesh key={i} position={[p.x, h / 2, p.z]} castShadow receiveShadow>
           <boxGeometry args={[p.w, h, p.d]} />
-          <meshStandardMaterial color="#713f12" roughness={0.7} />
+          <meshStandardMaterial color="#713f12" roughness={0.75} />
         </mesh>
       ))}
     </group>
@@ -54,11 +53,7 @@ function Walls({
       {walls.map((w, i) => (
         <mesh key={i} position={[w.x, 0.32, w.z]} castShadow receiveShadow>
           <boxGeometry args={[w.w, 0.64, w.d]} />
-          <meshStandardMaterial
-            color="#a16207"
-            roughness={0.55}
-            metalness={0.1}
-          />
+          <meshStandardMaterial color="#a16207" roughness={0.6} />
         </mesh>
       ))}
     </group>
@@ -81,7 +76,7 @@ function Cup({ x, z }: { x: number; z: number }) {
         <meshStandardMaterial
           color="#f43f5e"
           emissive="#be123c"
-          emissiveIntensity={0.4}
+          emissiveIntensity={0.45}
         />
       </mesh>
     </group>
@@ -103,11 +98,7 @@ function BallMesh({ stateRef }: { stateRef: RefObject<MiniGolfState> }) {
   return (
     <mesh ref={ref} castShadow>
       <sphereGeometry args={[BALL_RADIUS, 28, 28]} />
-      <meshStandardMaterial
-        color="#f8fafc"
-        roughness={0.25}
-        metalness={0.35}
-      />
+      <meshStandardMaterial color="#f8fafc" roughness={0.3} metalness={0.25} />
     </mesh>
   );
 }
@@ -120,30 +111,30 @@ function AimGuide({ stateRef }: { stateRef: RefObject<MiniGolfState> }) {
     const show = s.phase === "aiming";
     ref.current.visible = show;
     if (!show) return;
-    ref.current.position.set(s.ball.x, 0.05, s.ball.z);
-    ref.current.rotation.y = -s.aimAngle + Math.PI / 2;
-    const len = 0.8 + (s.charging ? s.power * 0.35 : 1.4);
+    ref.current.position.set(s.ball.x, 0.06, s.ball.z);
+    ref.current.rotation.y = Math.PI / 2 - s.aimAngle;
+    const len = 0.9 + (s.charging ? s.power * 0.4 : 1.5);
     ref.current.scale.set(1, 1, len);
   });
 
   return (
     <group ref={ref}>
-      <mesh position={[0, 0, 0.7]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.035, 0.035, 1.4, 8]} />
+      <mesh position={[0, 0, 0.75]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.04, 0.04, 1.5, 8]} />
         <meshStandardMaterial
           color="#fde68a"
           emissive="#f59e0b"
-          emissiveIntensity={0.55}
+          emissiveIntensity={0.65}
           transparent
-          opacity={0.85}
+          opacity={0.9}
         />
       </mesh>
-      <mesh position={[0, 0, 1.45]} rotation={[Math.PI / 2, 0, 0]}>
-        <coneGeometry args={[0.12, 0.28, 10]} />
+      <mesh position={[0, 0, 1.55]} rotation={[Math.PI / 2, 0, 0]}>
+        <coneGeometry args={[0.14, 0.3, 10]} />
         <meshStandardMaterial
           color="#fbbf24"
           emissive="#d97706"
-          emissiveIntensity={0.5}
+          emissiveIntensity={0.55}
         />
       </mesh>
     </group>
@@ -166,13 +157,6 @@ function Course({
       <Cup x={hole.cup.x} z={hole.cup.z} />
       <BallMesh stateRef={stateRef} />
       <AimGuide stateRef={stateRef} />
-      <ContactShadows
-        position={[0, 0.01, 0]}
-        opacity={0.4}
-        scale={Math.max(hole.halfW, hole.halfD) * 3}
-        blur={2}
-        far={6}
-      />
     </group>
   );
 }
@@ -184,12 +168,12 @@ function CameraRig({ stateRef }: { stateRef: RefObject<MiniGolfState> }) {
     const hole = currentHole(s);
     const span = Math.max(hole.halfW, hole.halfD);
     const ideal = new THREE.Vector3(
-      s.ball.x * 0.2,
-      span * 1.2 + 5,
-      s.ball.z * 0.2 + span * 1.25,
+      s.ball.x * 0.15,
+      span * 1.15 + 5.5,
+      s.ball.z * 0.15 + span * 1.35,
     );
-    three.camera.position.lerp(ideal, 0.05);
-    three.camera.lookAt(s.ball.x * 0.25, 0, s.ball.z * 0.25);
+    three.camera.position.lerp(ideal, 0.08);
+    three.camera.lookAt(s.ball.x * 0.2, 0, s.ball.z * 0.2);
   });
   return null;
 }
@@ -198,14 +182,18 @@ function AimPlane({
   stateRef,
   holeIndex,
   onAim,
+  onChargeStart,
+  onChargeEnd,
 }: {
   stateRef: RefObject<MiniGolfState>;
   holeIndex: number;
   onAim: (x: number, z: number) => void;
+  onChargeStart: () => void;
+  onChargeEnd: () => void;
 }) {
   const hole = currentHole({ holeIndex });
 
-  const onPointer = (e: ThreeEvent<PointerEvent>) => {
+  const onPointerMove = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     if (stateRef.current?.phase !== "aiming") return;
     onAim(e.point.x, e.point.z);
@@ -214,11 +202,23 @@ function AimPlane({
   return (
     <mesh
       rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, 0.03, 0]}
-      onPointerMove={onPointer}
-      onPointerDown={onPointer}
+      position={[0, 0.04, 0]}
+      onPointerMove={onPointerMove}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        if (stateRef.current?.phase !== "aiming") return;
+        onAim(e.point.x, e.point.z);
+        onChargeStart();
+      }}
+      onPointerUp={(e) => {
+        e.stopPropagation();
+        onChargeEnd();
+      }}
+      onPointerLeave={() => {
+        if (stateRef.current?.charging) onChargeEnd();
+      }}
     >
-      <planeGeometry args={[hole.halfW * 2.4, hole.halfD * 2.4]} />
+      <planeGeometry args={[hole.halfW * 2.5, hole.halfD * 2.5]} />
       <meshBasicMaterial transparent opacity={0} />
     </mesh>
   );
@@ -228,25 +228,35 @@ function SceneInner({
   stateRef,
   holeIndex,
   onAim,
+  onChargeStart,
+  onChargeEnd,
 }: {
   stateRef: RefObject<MiniGolfState>;
   holeIndex: number;
   onAim: (x: number, z: number) => void;
+  onChargeStart: () => void;
+  onChargeEnd: () => void;
 }) {
   return (
     <>
       <color attach="background" args={["#07140c"]} />
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.65} />
       <directionalLight
         castShadow
-        position={[8, 14, 6]}
-        intensity={1.3}
+        position={[8, 16, 8]}
+        intensity={1.45}
         shadow-mapSize={[1024, 1024]}
       />
-      <hemisphereLight args={["#bfdbfe", "#14532d", 0.35]} />
-      <Environment preset="park" />
+      <directionalLight position={[-6, 8, -4]} intensity={0.35} color="#86efac" />
+      <hemisphereLight args={["#bfdbfe", "#14532d", 0.45]} />
       <Course stateRef={stateRef} holeIndex={holeIndex} key={holeIndex} />
-      <AimPlane stateRef={stateRef} holeIndex={holeIndex} onAim={onAim} />
+      <AimPlane
+        stateRef={stateRef}
+        holeIndex={holeIndex}
+        onAim={onAim}
+        onChargeStart={onChargeStart}
+        onChargeEnd={onChargeEnd}
+      />
       <CameraRig stateRef={stateRef} />
     </>
   );
@@ -256,20 +266,33 @@ export default function MiniGolfScene({
   stateRef,
   holeIndex,
   onAim,
+  onChargeStart,
+  onChargeEnd,
 }: {
   stateRef: RefObject<MiniGolfState>;
   holeIndex: number;
   onAim: (x: number, z: number) => void;
+  onChargeStart: () => void;
+  onChargeEnd: () => void;
 }) {
   return (
     <Canvas
       shadows
-      dpr={[1, 1.75]}
-      camera={{ position: [0, 12, 11], fov: 42, near: 0.1, far: 80 }}
-      gl={{ antialias: true, alpha: false }}
+      dpr={[1, 1.5]}
+      camera={{ position: [0, 14, 12], fov: 42, near: 0.1, far: 80 }}
+      gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+      className="h-full w-full touch-none"
       style={{ background: "#07140c" }}
     >
-      <SceneInner stateRef={stateRef} holeIndex={holeIndex} onAim={onAim} />
+      <Suspense fallback={null}>
+        <SceneInner
+          stateRef={stateRef}
+          holeIndex={holeIndex}
+          onAim={onAim}
+          onChargeStart={onChargeStart}
+          onChargeEnd={onChargeEnd}
+        />
+      </Suspense>
     </Canvas>
   );
 }

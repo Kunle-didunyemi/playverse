@@ -93,7 +93,10 @@ export function useMiniGolf() {
       }
 
       stateRef.current = s;
-      pushHud(s.phase !== "rolling" && s.phase !== "aiming");
+
+      if (s.charging || s.phase === "rolling" || s.phase === "aiming") {
+        pushHud(s.charging || s.phase !== "aiming");
+      }
 
       if (s.phase === "course_done") {
         finishIfNeeded(s);
