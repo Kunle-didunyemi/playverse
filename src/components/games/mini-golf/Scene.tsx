@@ -277,7 +277,7 @@ export default function MiniGolfScene({
 }) {
   return (
     <Canvas
-      shadows
+      shadows="percentage"
       dpr={[1, 1.5]}
       camera={{ position: [0, 14, 12], fov: 42, near: 0.1, far: 80 }}
       gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}

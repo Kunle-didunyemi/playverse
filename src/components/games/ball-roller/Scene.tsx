@@ -190,7 +190,7 @@ export default function BallRollerScene({
 }) {
   return (
     <Canvas
-      shadows
+      shadows="percentage"
       dpr={[1, 1.75]}
       camera={{ position: [0, 12, 10], fov: 42, near: 0.1, far: 80 }}
       gl={{ antialias: true, alpha: false }}

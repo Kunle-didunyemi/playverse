@@ -73,7 +73,7 @@ export default function MiniGolfGameShell() {
 
   const headline =
     state.phase === "ready"
-      ? "Aim, charge, putt — sink all five holes"
+      ? "Aim, charge, putt — sink all ten holes"
       : state.phase === "aiming"
         ? `${hole.name} · Par ${hole.par}`
         : state.phase === "rolling"
@@ -271,7 +271,7 @@ export default function MiniGolfGameShell() {
       )}
 
       <p className="mt-6 max-w-[480px] text-center text-xs leading-relaxed text-zinc-500">
-        Five creative greens. Beat par when you can — hole-in-ones pay big on
+        Ten creative greens. Beat par when you can — hole-in-ones pay big on
         the leaderboard. Lower strokes, higher score.
       </p>
 
@@ -302,7 +302,7 @@ export default function MiniGolfGameShell() {
             can retry or skip.
           </li>
           <li>
-            Finish all five holes to post your course score to the leaderboard.
+            Finish all ten holes to post your course score to the leaderboard.
           </li>
         </ul>
       </GameRulesModal>
